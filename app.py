@@ -30,10 +30,13 @@ def register_user(email, password, nickname):
 
 # Функция за вход на потребител
 def login_user(email, password):
-    response = supabase.auth.sign_in(email=email, password=password)
-    if response.status_code != 200:
-        return {"status_code": response.status_code, "message": "Invalid credentials. Please try again."}
-    return response
+    try:
+        response = supabase.auth.sign_in_with_password(email=email, password=password)
+        if response.get("error"):
+            return {"status_code": 400, "message": "Invalid credentials. Please try again."}
+        return response
+    except Exception as e:
+        return {"status_code": 500, "message": str(e)}
 
 
 # Функция за добавяне на тренировка
@@ -112,7 +115,7 @@ def login():
         response = login_user(email, password)
 
         if response["status_code"] == 200:
-            session['user_id'] = response.data['user']['id']
+            session['user_id'] = response['data']['user']['id']
             flash('Login successful!', 'success')
             return redirect(url_for('index'))
         else:
