@@ -1,2 +1,2 @@
-Flask
-supabase-py
+Flask==2.1.0
+supabase-py==0.1.8
