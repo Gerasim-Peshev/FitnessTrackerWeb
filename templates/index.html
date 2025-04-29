@@ -68,42 +68,6 @@
               console.log('Service Worker registration failed: ', err);
             });
         }
-
-        if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/sw.js')
-        .then(function(reg) {
-            console.log('Service Worker Registered!', reg);
-        }).catch(function(err) {
-            console.log('Service Worker registration failed: ', err);
-        });
-    }
-
-    function scheduleNotification() {
-        let now = new Date();
-        let target = new Date();
-        target.setHours(20, 0, 0, 0);  // Настройка за 20:00 часа
-
-        // Ако вече е минало 20:00, настрой за следващия ден
-        if (now > target) {
-            target.setDate(target.getDate() + 1);
-        }
-
-        let timeout = target.getTime() - now.getTime();
-
-        setTimeout(() => {
-            new Notification("Did you train today?");
-        }, timeout);
-    }
-
-    if (Notification.permission === "granted") {
-        scheduleNotification();
-    } else {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                scheduleNotification();
-            }
-        });
-    }
     </script>
 </head>
 <body>

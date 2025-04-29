@@ -42,14 +42,3 @@ self.addEventListener('activate', (event) => {
     })
   );
 });
-
-self.addEventListener('push', function(event) {
-  const options = {
-    body: 'Did you train today?',
-    icon: '/static/favicon-32x32.png',
-    badge: '/static/favicon-32x32.png',
-  };
-  event.waitUntil(
-    self.registration.showNotification('Fitness Tracker', options)
-  );
-});
