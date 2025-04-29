@@ -31,9 +31,16 @@ def register_user(email, password, nickname):
 # Функция за вход на потребител
 def login_user(email, password):
     try:
-        response = supabase.auth.sign_in_with_password(email=email, password=password)
+        # Използвай правилния метод за влизане
+        response = supabase.auth.sign_in({
+            'email': email,
+            'password': password
+        })
+
+        # Проверка за грешки
         if response.get("error"):
             return {"status_code": 400, "message": "Invalid credentials. Please try again."}
+
         return response
     except Exception as e:
         return {"status_code": 500, "message": str(e)}
