@@ -1,4 +1,4 @@
-Flask==2.0.3  # Използвай версия, която е съвместима с новия Werkzeug
-Werkzeug==2.0.3  # Съвместим с Flask 2.0.x
-gunicorn==20.1.0
-supabase==0.3.0  # Увери се, че използваш актуална версия на supabase
+Flask
+Werkzeug
+gunicorn
+supabase
