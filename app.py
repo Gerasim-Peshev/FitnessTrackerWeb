@@ -7,8 +7,8 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # Supabase настройки
-url = "https://your-project.supabase.co"  # Замени с твой Supabase URL
-key = "your-api-key"  # Замени с твой Supabase API ключ
+url = "https://jnppdplocmgtckjnugza.supabase.co"
+key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpucHBkcGxvY21ndGNram51Z3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MjI0NTMsImV4cCI6MjA2MTQ5ODQ1M30.6xwBizgEmxCsMRv72OZHWBVVqzjrTTLXiR68TitENHI"
 supabase: Client = create_client(url, key)
 
 
