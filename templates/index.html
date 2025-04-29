@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fitness Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <meta name="theme-color" content="#4CAF50">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 80px;
+            padding: 10px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="date"] {
+            font-size: 18px;
+            padding: 5px;
+            margin: 10px;
+            border-radius: 6px;
+        }
+        .today-button, .history-button {
+            font-size: 16px;
+            padding: 8px 16px;
+            margin: 10px;
+        }
+        /* DARK MODE */
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        body.dark-mode button, body.dark-mode input[type="date"] {
+            background-color: #333;
+            color: #ffffff;
+            border: 1px solid #555;
+        }
+    </style>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        function setToday() {
+            const today = new Date().toISOString().substr(0, 10);
+            document.getElementById('dateInput').value = today;
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+            .then(function(reg) {
+              console.log('Service Worker Registered!', reg);
+            }).catch(function(err) {
+              console.log('Service Worker registration failed: ', err);
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/sw.js')
+        .then(function(reg) {
+            console.log('Service Worker Registered!', reg);
+        }).catch(function(err) {
+            console.log('Service Worker registration failed: ', err);
+        });
+    }
+
+    function scheduleNotification() {
+        let now = new Date();
+        let target = new Date();
+        target.setHours(15, 20, 0, 0);  // Настройка за 20:00 часа
+
+        // Ако вече е минало 20:00, настрой за следващия ден
+        if (now > target) {
+            target.setDate(target.getDate() + 1);
+        }
+
+        let timeout = target.getTime() - now.getTime();
+
+        setTimeout(() => {
+            new Notification("Did you train today?");
+        }, timeout);
+    }
+
+    if (Notification.permission === "granted") {
+        scheduleNotification();
+    } else {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+                scheduleNotification();
+            }
+        });
+    }
+    </script>
+</head>
+<body>
+    <button onclick="toggleDarkMode()" style="position: fixed; top: 10px; right: 10px;">🌙/☀️</button>
+
+    <h1>Did you train today?</h1>
+
+    <form method="POST">
+        <input type="date" id="dateInput" name="date" value="{{ today }}">
+        <button type="button" class="today-button" onclick="setToday()">Today</button>
+        <br><br>
+
+        <button type="submit" name="answer" value="Yes" style="background-color: #4CAF50; color: white;">Yes</button>
+        <button type="submit" name="answer" value="No" style="background-color: #f44336; color: white;">No</button>
+        <button type="submit" name="answer" value="Restday" style="background-color: #ffeb3b;">Restday</button>
+    </form>
+
+    <form action="/history">
+        <button type="submit" class="history-button" style="background-color: #2196F3; color: white;">View History</button>
+    </form>
+</body>
+</html>
