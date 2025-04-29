@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session, flash
 from supabase import create_client, Client
 from datetime import datetime
 import os
@@ -6,22 +6,25 @@ import os
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+# Supabase настройка
 url = "https://jnppdplocmgtckjnugza.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpucHBkcGxvY21ndGNram51Z3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MjI0NTMsImV4cCI6MjA2MTQ5ODQ1M30.6xwBizgEmxCsMRv72OZHWBVVqzjrTTLXiR68TitENHI"
-
 supabase: Client = create_client(url, key)
 
+# Функция за регистрация на потребител
 def register_user(email, password, nickname):
-    response = supabase.auth.sign_up(email = email, password = password)
+    response = supabase.auth.sign_up(email=email, password=password)
     if response.status_code == 200:
         user_id = response.data['user']['id']
         supabase.table("users").upsert({"user_id": user_id, "nickname": nickname}).execute()
     return response
 
+# Функция за вход на потребител
 def login_user(email, password):
     response = supabase.auth.sign_in(email=email, password=password)
     return response
 
+# Функция за добавяне на тренировка
 def add_training(user_id, date, status):
     data = {
         "user_id": user_id,
@@ -75,9 +78,10 @@ def register():
         nickname = request.form['nickname']
         response = register_user(email, password, nickname)
         if response.status_code == 200:
+            flash('Registration successful! Please log in.', 'success')
             return redirect(url_for('login'))
         else:
-            return render_template('register.html', error="Registration failed")
+            flash('Registration failed. Please try again.', 'danger')
 
     return render_template('register.html')
 
@@ -89,16 +93,18 @@ def login():
         response = login_user(email, password)
         if response.status_code == 200:
             session['user_id'] = response.data['user']['id']
+            flash('Login successful!', 'success')
             return redirect(url_for('index'))
         else:
-            return render_template('login.html', error="Login failed")
+            flash('Login failed. Please check your credentials.', 'danger')
 
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
+    flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)
